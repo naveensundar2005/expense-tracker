@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FinTrack - Smart Finance</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+  
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    background: #0f0c29;
+    min-height: 100vh;
+    padding: 20px;
+    overflow-y: auto; /* ENABLE SCROLLING */
+  }
+
+  .bg-animated {
+    position: fixed; inset: 0; z-index: 0;
+  }
+  .blob { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.35; animation: blobMove 8s ease-in-out infinite; }
+  .blob1 { width: 500px; height: 500px; background: #4f46e5; top: -100px; left: -100px; animation-delay: 0s; }
+  .blob2 { width: 400px; height: 400px; background: #7c3aed; bottom: -100px; right: -100px; animation-delay: -3s; }
+  .blob3 { width: 300px; height: 300px; background: #06b6d4; top: 50%; left: 50%; transform: translate(-50%,-50%); animation-delay: -6s; }
+
+  @keyframes blobMove {
+    0%,100% { transform: translate(0,0) scale(1); }
+    33% { transform: translate(30px,-30px) scale(1.05); }
+    66% { transform: translate(-20px,20px) scale(0.95); }
+  }
+
+  .wrapper {
+    position: relative; z-index: 1; display: flex;
+    width: 100%; max-width: 960px;
+    margin: auto; /* center horizontally */
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.5);
+    max-height: 95vh; /* CONTAINER MAX HEIGHT */
+    animation: slideUp 0.6s ease;
+  }
+
+  @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+  .left { flex: 1; padding: 52px 44px; background: linear-gradient(135deg, rgba(79,70,229,0.8), rgba(124,58,237,0.8)); color: white; display: flex; flex-direction: column; justify-content: center; }
+  .left .brand { font-size: 36px; font-weight: 800; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; }
+  .left .tagline { font-size: 15px; opacity: 0.8; line-height: 1.7; margin-bottom: 36px; }
+  .feature { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; animation: fadeIn 0.5s ease forwards; opacity: 0; }
+  .feature:nth-child(3) { animation-delay: 0.2s; }
+  .feature:nth-child(4) { animation-delay: 0.4s; }
+  .feature:nth-child(5) { animation-delay: 0.6s; }
+  .feature:nth-child(6) { animation-delay: 0.8s; }
+  @keyframes fadeIn { to { opacity: 1; } }
+  .feature-icon { width: 40px; height: 40px; background: rgba(255,255,255,0.15); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+  .feature-text { font-size: 14px; opacity: 0.9; }
+
+  .right { flex: 1; padding: 52px 44px; background: white; overflow-y: auto; scroll-behavior: smooth; } /* SCROLLABLE FORM */
+  .right h2 { font-size: 26px; font-weight: 800; color: #1a1a2e; margin-bottom: 6px; }
+  .right .sub { font-size: 14px; color: #888; margin-bottom: 28px; }
+
+  .tabs { display: flex; background: #f5f5f5; border-radius: 14px; padding: 5px; margin-bottom: 26px; }
+  .tab { flex: 1; padding: 11px; text-align: center; border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: 600; color: #888; border: none; background: transparent; transition: all 0.3s; }
+  .tab.active { background: white; color: #4f46e5; box-shadow: 0 4px 12px rgba(79,70,229,0.15); }
+
+  .form-group { margin-bottom: 16px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  label { display: block; font-size: 11px; font-weight: 700; color: #888; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.6px; }
+  input, select { width: 100%; padding: 13px 15px; border: 2px solid #f0f0f0; border-radius: 12px; font-size: 14px; outline: none; transition: all 0.2s; font-family: inherit; color: #333; }
+  input:focus, select:focus { border-color: #4f46e5; box-shadow: 0 0 0 4px rgba(79,70,229,0.08); }
+
+  .submit-btn { width: 100%; padding: 15px; background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white; border: none; border-radius: 14px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 8px; transition: all 0.2s; font-family: inherit; letter-spacing: 0.3px; }
+  .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(79,70,229,0.35); }
+  .submit-btn:active { transform: translateY(0); }
+
+  .msg { text-align: center; margin-top: 14px; font-size: 13px; padding: 12px; border-radius: 10px; display: none; font-weight: 500; }
+  .msg.error { background: #fef2f2; color: #dc2626; display: block; }
+  .msg.success { background: #f0fdf4; color: #16a34a; display: block; }
+
+  @media(max-width:640px) { .left { display: none; } .wrapper { max-width: 440px; } }
+
+</style>
+</head>
+<body>
+<div class="bg-animated">
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
+  <div class="blob blob3"></div>
+</div>
+
+<div class="wrapper">
+  <div class="left">
+    <div class="brand">💰 FinTrack</div>
+    <div class="tagline">Your intelligent personal finance companion. Take control of your money today.</div>
+    <div class="feature"><div class="feature-icon">📊</div><div class="feature-text">Beautiful analytics & pie charts</div></div>
+    <div class="feature"><div class="feature-icon">🔒</div><div class="feature-text">Secure JWT authentication</div></div>
+    <div class="feature"><div class="feature-icon">✏️</div><div class="feature-text">Edit expenses & profile anytime</div></div>
+    <div class="feature"><div class="feature-icon">🎯</div><div class="feature-text">Smart income vs expense tracking</div></div>
+  </div>
+
+  <div class="right">
+    <h2 id="form-title">Welcome back!</h2>
+    <p class="sub" id="form-sub">Sign in to your FinTrack account</p>
+    <div class="tabs">
+      <button class="tab active" onclick="showTab('login')">Sign In</button>
+      <button class="tab" onclick="showTab('register')">Sign Up</button>
+    </div>
+
+    <div id="login-form">
+      <div class="form-group"><label>Username</label><input type="text" id="lu" placeholder="Enter your username"/></div>
+      <div class="form-group"><label>Password</label><input type="password" id="lp" placeholder="Enter your password"/></div>
+      <button class="submit-btn" onclick="login()">Sign In →</button>
+      <div id="lmsg" class="msg"></div>
+    </div>
+
+    <div id="register-form" style="display:none">
+      <div class="form-row">
+        <div class="form-group"><label>First Name</label><input type="text" id="rfn" placeholder="John"/></div>
+        <div class="form-group"><label>Last Name</label><input type="text" id="rln" placeholder="Doe"/></div>
+      </div>
+      <div class="form-group"><label>Username</label><input type="text" id="ru" placeholder="Choose username"/></div>
+      <div class="form-group"><label>Email</label><input type="email" id="re" placeholder="john@example.com"/></div>
+      <div class="form-row">
+        <div class="form-group"><label>Date of Birth</label><input type="date" id="rd"/></div>
+        <div class="form-group"><label>Phone</label><input type="tel" id="rph" placeholder="+91 9876543210"/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Gender</label><select id="rg"><option value="">Select</option><option>Male</option><option>Female</option><option>Other</option></select></div>
+        <div class="form-group"><label>Occupation</label><input type="text" id="ro" placeholder="e.g. Developer"/></div>
+      </div>
+      <div class="form-group"><label>Password</label><input type="password" id="rp" placeholder="Min 6 characters"/></div>
+      <button class="submit-btn" onclick="register()">Create Account →</button>
+      <div id="rmsg" class="msg"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API='http://localhost:8080';
+
+function showTab(t){
+  document.getElementById('login-form').style.display=t==='login'?'block':'none';
+  document.getElementById('register-form').style.display=t==='register'?'block':'none';
+  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('active',(t==='login'&&i===0)||(t==='register'&&i===1)));
+  document.getElementById('form-title').textContent=t==='login'?'Welcome back!':'Create account';
+  document.getElementById('form-sub').textContent=t==='login'?'Sign in to your FinTrack account':'Join FinTrack and master your finances';
+}
+
+async function login(){
+  const u=document.getElementById('lu').value,p=document.getElementById('lp').value,m=document.getElementById('lmsg');
+  if(!u||!p){m.className='msg error';m.textContent='Please fill all fields';return;}
+  try{
+    const r=await fetch(`${API}/api/auth/login`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({username:u,password:p})
+    });
+    const d=await r.json();
+    if(r.ok){
+      localStorage.setItem('token',d.token);
+      localStorage.setItem('username',d.username);
+      m.className='msg success';m.textContent='Welcome back! Loading your dashboard...';
+      setTimeout(()=>window.location.href='dashboard.html',900);
+    } else {
+      m.className='msg error';m.textContent='Invalid username or password';
+    }
+  } catch(e){ m.className='msg error'; m.textContent='Cannot connect. Make sure Spring Boot is running on port 8080.';}
+}
+
+async function register(){
+  const fn=document.getElementById('rfn').value,ln=document.getElementById('rln').value,u=document.getElementById('ru').value,
+  e=document.getElementById('re').value,d=document.getElementById('rd').value,ph=document.getElementById('rph').value,
+  g=document.getElementById('rg').value,o=document.getElementById('ro').value,p=document.getElementById('rp').value,m=document.getElementById('rmsg');
+
+  if(!u||!e||!p){m.className='msg error';m.textContent='Username, email and password are required';return;}
+  try{
+    const r=await fetch(`${API}/api/auth/register`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({username:u,email:e,password:p})
+    });
+    const data=await r.json();
+    if(r.ok){
+      localStorage.setItem('token',data.token);
+      localStorage.setItem('username',data.username);
+      localStorage.setItem('fullname',`${fn} ${ln}`.trim()||u);
+      localStorage.setItem('email',e);
+      localStorage.setItem('dob',d);
+      localStorage.setItem('phone',ph);
+      localStorage.setItem('gender',g);
+      localStorage.setItem('occupation',o);
+      m.className='msg success';m.textContent='Account created! Setting up your dashboard...';
+      setTimeout(()=>window.location.href='dashboard.html',900);
+    } else {
+      m.className='msg error';m.textContent=data.message||'Registration failed';
+    }
+  } catch(e){ m.className='msg error'; m.textContent='Cannot connect to server.';}
+}
+</script>
+</body>
+</html>
